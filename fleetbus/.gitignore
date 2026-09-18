@@ -1,30 +1,47 @@
+# fleetbus/ — local .gitignore
+
+# --- Python ---
 node_modules/
 venv/
+.venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+.mypy_cache/
 
+# --- Environment / secrets ---
 .env
 .env.*
 !.env.example
 
+# --- Runtime data (regenerated, not source) ---
 backend/uploads/
 backend/results/
+backend/data/
+backend/videos/uploads/
+.sites-runtime/
 
+# --- IDE / OS ---
 .vscode/
 .idea/
-.pytest_cache/
-.mypy_cache/
-
-dist/
-build/
-
 .DS_Store
 Thumbs.db
 
-*.pt
+# --- Build output ---
+dist/
+build/
+
+# --- Model weights ---
+# Pretrained COCO checkpoint — re-downloadable, do not commit
+yolov8n.pt
 *.onnx
 *.weights
-.venv/
-backend/data/
-backend/videos/
-.sites-runtime/
+
+# --- SIH submission: trained model + demo videos are part of the deliverable ---
+# Trained road hazard model (YOLOv8n, 4 classes: crack/pothole/patch/other)
+!backend/models/road_hazard.pt
+
+# Demo videos — needed to reproduce the pipeline
+!backend/videos/road.mp4
+!backend/videos/traffic.mp4
+!backend/videos/traffic_backup.mp4

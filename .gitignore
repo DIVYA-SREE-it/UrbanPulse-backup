@@ -1,44 +1,62 @@
-# Python
+# UrbanPulse-DADIS-compatible — repo root .gitignore
+
+# --- Python ---
 __pycache__/
 *.py[cod]
 *.so
-venv/
 .venv/
-fleetbus/backend/venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
 
-# Node
+# --- Node ---
 node_modules/
 fleetbus/node_modules/
 npm-debug.log*
+yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# Builds
-fleetbus/dist/
-fleetbus/build/
+# --- Build output ---
 dist/
 build/
+fleetbus/dist/
+fleetbus/build/
 
-# Runtime data
+# --- Runtime data (regenerated, not source) ---
 *.db
 *.sqlite
 *.sqlite3
-fleetbus/backend/videos/uploads/
+fleetbus/backend/data/
 fleetbus/backend/results/
-*.log
+fleetbus/backend/videos/uploads/
+fleetbus/backend/uploads/
+.sites-runtime/
 
-# Pretrained COCO weights (re-downloadable)
+# --- Model weights ---
+# Pretrained COCO checkpoint — re-downloadable, do not commit
 fleetbus/backend/models/yolov8n.pt
+*.onnx
+*.weights
 
-# IDE / OS
+# --- IDE / OS ---
 .vscode/
 .idea/
 *.swp
+*.swo
 .DS_Store
 Thumbs.db
 
-# Secrets
+# --- Secrets ---
 .env
-.env.local
+.env.*
+!.env.example
 *.pem
 *.key
 secrets.json
+
+# --- Misc ---
+*.bak
+*.tmp
