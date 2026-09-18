@@ -1,0 +1,6 @@
+Frontend: npm ci and npm run build succeeded. Existing large-bundle warning remains.
+Python: syntax compilation succeeded.
+Tests: 10 passed; 4 FastAPI tests skipped (dependencies unavailable).
+Separate-copy installer: dry run, imports, source preservation, overwrite refusal passed.
+Only two original source files modified; all other original files byte-identical.
+Actual ML inference, DADIS weights, accuracy, GPU and browser visual tests: NOT VERIFIED.
