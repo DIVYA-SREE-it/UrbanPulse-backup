@@ -131,7 +131,7 @@ class CameraWorker:
                     self.state.update(model_description=identity["description"], model_sha256=identity["sha256"],
                                       detection_confidence=traffic_conf, inference_size=traffic_size)
                 LOG.info("Traffic model: %s; classes: %s", identity["description"], names)
-            kwargs = dict(imgsz=cfg["imgsz"], conf=cfg["confidence"], device=device,
+            kwargs = dict(imgsz=(cfg["road_imgsz"] if self.kind == "road" else cfg["imgsz"]), conf=(cfg["road_confidence"] if self.kind == "road" else cfg["confidence"]), device=device,
                           half=device != "cpu", verbose=False)
             if self.kind == "traffic":
                 kwargs.update(classes=class_ids, conf=traffic_conf, imgsz=traffic_size)
@@ -316,3 +316,4 @@ class EdgeRuntime:
         return {"bus_id": self.config["bus_id"], "gps": {"latitude": lat, "longitude": lon,
                     "source": "SIMULATED_ROUTE"}, "outbox": self.outbox.status(),
                 "cameras": {kind: worker.snapshot() for kind, worker in self.workers.items()}}
+

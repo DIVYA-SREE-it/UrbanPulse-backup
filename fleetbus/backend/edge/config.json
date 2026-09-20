@@ -6,6 +6,8 @@
   "target_fps": 12,
   "imgsz": 416,
   "confidence": 0.35,
+  "road_imgsz": 640,
+  "road_confidence": 0.45,
   "display_width": 960,
   "jpeg_quality": 75,
   "evidence": true,
@@ -17,7 +19,7 @@
   "road_cooldown_seconds": 30,
   "route_duration_seconds": 120,
   "prototype_route": [[13.0140,80.2235],[13.0144,80.2240],[13.0148,80.2246],[13.0152,80.2252],[13.0157,80.2258],[13.0162,80.2264]],
-  "road_model": "models/best.pt",
+  "road_model": "models/road_hazard.pt",
   "road_video": "videos/road.mp4",
   "traffic_model": "models/yolov8n.pt",
   "traffic_video": "videos/traffic.mp4"
