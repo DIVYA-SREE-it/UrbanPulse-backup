@@ -202,6 +202,16 @@ class CameraWorker:
                     raw_label = result.names[class_id]
                     label = canonical_name(raw_label) if self.kind == "traffic" else raw_label
                     confidence = float(box.conf.item())
+                    if self.kind == "road":
+                        class_thresholds = {
+                        "crack": 0.45,
+                        "pothole": 0.35,
+                        "patch": 0.35,
+                        "other": 0.45,
+                    }
+
+                    if confidence < class_thresholds.get(raw_label, 0.45):
+                        continue
                     xyxy = box.xyxy[0].tolist()
                     track = int(box.id.item()) if box.id is not None else None
                     boxes.append({"class_name": label, "raw_class_name": raw_label, "confidence": confidence, "track_id": track,
