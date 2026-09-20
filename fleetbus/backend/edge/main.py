@@ -19,9 +19,12 @@ async def lifespan(app):
 
 
 app = FastAPI(title="UrbanPulse Bus Edge Preview", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=[
-    f"http://{host}:{port}" for host in ("localhost", "127.0.0.1") for port in (5173,5174)],
-    allow_methods=["GET"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1):\d+",
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/api/status")

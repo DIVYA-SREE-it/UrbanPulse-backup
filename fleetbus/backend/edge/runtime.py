@@ -14,6 +14,7 @@ from uuid import uuid4
 from edge.outbox import Outbox
 from edge.traffic_labels import canonical_name, selected_class_ids, model_identity, inference_settings, vehicle_count as count_vehicles
 from edge.road_stabilizer import RoadDetectionStabilizer
+from edge.road_overlay import draw_road_detections
 
 BASE = Path(__file__).resolve().parent.parent
 LOG = logging.getLogger("urbanpulse.edge")
@@ -202,33 +203,56 @@ class CameraWorker:
                     raw_label = result.names[class_id]
                     label = canonical_name(raw_label) if self.kind == "traffic" else raw_label
                     confidence = float(box.conf.item())
+
+                    # Road model uses class-specific thresholds.
+                    # Traffic keeps its normal YOLO confidence handling.
                     if self.kind == "road":
                         class_thresholds = {
-                        "crack": 0.45,
-                        "pothole": 0.35,
-                        "patch": 0.35,
-                        "other": 0.45,
-                    }
+                            "crack": 0.45,
+                            "pothole": 0.35,
+                            "patch": 0.35,
+                            "other": 0.45,
+                        }
 
-                    if confidence < class_thresholds.get(raw_label, 0.45):
-                        continue
+                        if confidence < class_thresholds.get(raw_label, 0.45):
+                            continue
+
                     xyxy = box.xyxy[0].tolist()
                     track = int(box.id.item()) if box.id is not None else None
-                    boxes.append({"class_name": label, "raw_class_name": raw_label, "confidence": confidence, "track_id": track,
-                                  "xyxy": xyxy})
+
+                    boxes.append({
+                        "class_name": label,
+                        "raw_class_name": raw_label,
+                        "confidence": confidence,
+                        "track_id": track,
+                        "xyxy": xyxy,
+                    })
+
                     if self.kind == "traffic":
                         counts[label] += 1
+
                     if self.kind == "traffic" and label == "traffic light":
                         x1, y1, x2, y2 = [int(x) for x in xyxy]
-                        crop = frame[max(0,y1):min(height,y2), max(0,x1):min(width,x2)]
+                        crop = frame[
+                            max(0, y1):min(height, y2),
+                            max(0, x1):min(width, x2)
+                        ]
+
                         color, score = classify_light_color(crop)
+
                         if color != "unknown":
-                            signal_candidates.append({"state": color.upper(), "color_score": score,
-                                                      "detector_confidence": confidence})
+                            signal_candidates.append({
+                                "state": color.upper(),
+                                "color_score": score,
+                                "detector_confidence": confidence,
+                            })
                 if self.kind == "road":
                     boxes = self.road_stabilizer.update(boxes)
                 vehicle_count = count_vehicles(counts)
-                annotated = result.plot()
+                if self.kind == "road":
+                    annotated = draw_road_detections(frame, boxes)
+                else:
+                    annotated = result.plot()
                 if annotated.shape[1] > cfg["display_width"]:
                     scale = cfg["display_width"] / annotated.shape[1]
                     annotated = cv2.resize(annotated, (cfg["display_width"], round(annotated.shape[0] * scale)))
