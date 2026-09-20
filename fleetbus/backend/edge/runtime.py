@@ -13,6 +13,7 @@ from uuid import uuid4
 
 from edge.outbox import Outbox
 from edge.traffic_labels import canonical_name, selected_class_ids, model_identity, inference_settings, vehicle_count as count_vehicles
+from edge.road_stabilizer import RoadDetectionStabilizer
 
 BASE = Path(__file__).resolve().parent.parent
 LOG = logging.getLogger("urbanpulse.edge")
@@ -64,6 +65,7 @@ class CameraWorker:
         self.jpeg = None
         self.sequence = 0
         self.published_at = None
+        self.road_stabilizer = RoadDetectionStabilizer() if kind == "road" else None
         self.state = {"status": "starting", "error": None, "camera_id": self.camera_id,
                       "bus_id": config["bus_id"], "source": "PRERECORDED_VIDEO_AI",
                       "gps_source": "SIMULATED_ROUTE", "classes": {}, "inference_ms": None,
@@ -131,8 +133,9 @@ class CameraWorker:
                     self.state.update(model_description=identity["description"], model_sha256=identity["sha256"],
                                       detection_confidence=traffic_conf, inference_size=traffic_size)
                 LOG.info("Traffic model: %s; classes: %s", identity["description"], names)
-            kwargs = dict(imgsz=(cfg["road_imgsz"] if self.kind == "road" else cfg["imgsz"]), conf=(cfg["road_confidence"] if self.kind == "road" else cfg["confidence"]), device=device,
-                          half=device != "cpu", verbose=False)
+            kwargs = dict(imgsz=(cfg["road_imgsz"] if self.kind == "road" else cfg["imgsz"]),
+                      conf=(cfg["road_confidence"] if self.kind == "road" else cfg["confidence"]), device=device,
+                      half=device != "cpu", verbose=False)
             if self.kind == "traffic":
                 kwargs.update(classes=class_ids, conf=traffic_conf, imgsz=traffic_size)
             # Initialize inference/tracker once before starting playback timing.
@@ -212,6 +215,8 @@ class CameraWorker:
                         if color != "unknown":
                             signal_candidates.append({"state": color.upper(), "color_score": score,
                                                       "detector_confidence": confidence})
+                if self.kind == "road":
+                    boxes = self.road_stabilizer.update(boxes)
                 vehicle_count = count_vehicles(counts)
                 annotated = result.plot()
                 if annotated.shape[1] > cfg["display_width"]:
@@ -316,4 +321,3 @@ class EdgeRuntime:
         return {"bus_id": self.config["bus_id"], "gps": {"latitude": lat, "longitude": lon,
                     "source": "SIMULATED_ROUTE"}, "outbox": self.outbox.status(),
                 "cameras": {kind: worker.snapshot() for kind, worker in self.workers.items()}}
-
