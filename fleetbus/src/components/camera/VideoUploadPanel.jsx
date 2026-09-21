@@ -24,6 +24,7 @@ function UploadRow({ label, camera, onMessage, onReset }) {
       const data = await res.json();
       if (data.ok) {
         onMessage({ type: 'ok', text: `${label}: loaded ${data.filename} (${data.frames} frames @ ${data.fps || '?'} fps)` });
+        setTimeout(() => window.location.reload(), 700);
       } else {
         onMessage({ type: 'err', text: `${label}: ${data.error || 'upload failed'}` });
       }
@@ -36,14 +37,25 @@ function UploadRow({ label, camera, onMessage, onReset }) {
   };
 
   const handleReset = async () => {
-    try {
-      await fetch(`${EDGE_URL}/api/reset-video?camera=${camera}`, { method: 'POST' });
-      onReset();
-      onMessage({ type: 'ok', text: `${label}: reverted to default` });
-    } catch (err) {
-      onMessage({ type: 'err', text: `${label}: reset failed — ${err.message}` });
-    }
-  };
+  try {
+    await fetch(`${EDGE_URL}/api/reset-video?camera=${camera}`, { method: 'POST' });
+
+    onReset();
+
+    onMessage({
+      type: 'ok',
+      text: `${label}: reverted to default`,
+    });
+
+    setTimeout(() => window.location.reload(), 700);
+
+  } catch (err) {
+    onMessage({
+      type: 'err',
+      text: `${label}: reset failed — ${err.message}`,
+    });
+  }
+};
 
   return (
     <div className="flex items-center gap-3 flex-wrap border-l-4 border-l-blue-500 pl-3 py-2">

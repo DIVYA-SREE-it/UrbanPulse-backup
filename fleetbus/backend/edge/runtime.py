@@ -208,13 +208,12 @@ class CameraWorker:
                     # Traffic keeps its normal YOLO confidence handling.
                     if self.kind == "road":
                         class_thresholds = {
-                            "crack": 0.45,
+                            "speed_bump": 0.35,
                             "pothole": 0.35,
-                            "patch": 0.35,
-                            "other": 0.45,
+                            "unpaved_road": 0.35,
                         }
 
-                        if confidence < class_thresholds.get(raw_label, 0.45):
+                        if confidence < class_thresholds.get(raw_label, 0.35):
                             continue
 
                     xyxy = box.xyxy[0].tolist()
@@ -341,6 +340,25 @@ class EdgeRuntime:
         self.sync_thread.start()
         for worker in self.workers.values():
             worker.thread.start()
+            
+    def restart_worker(self, kind):
+        if kind not in ("road", "traffic"):
+            raise ValueError(f"Unknown camera: {kind}")
+
+        old_worker = self.workers[kind]
+
+        old_worker.stop.set()
+        old_worker.thread.join(timeout=8)
+
+        new_worker = CameraWorker(
+            kind,
+            self.config,
+            self.outbox,
+            self.started,
+        )
+
+        self.workers[kind] = new_worker
+        new_worker.thread.start()
 
     def close(self):
         self.outbox.stop.set()

@@ -97,6 +97,20 @@ export function LiveCameraPage() {
       {/* Main live intelligence */}
       <EdgeCameraPanels />
 
+      {/* Camera input controls */}
+      <div className="mt-6">
+        <div className="mb-3">
+        <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wide">
+            Demo Camera Inputs
+        </h2>
+        <p className="text-xs text-slate-500 mt-1">
+          Upload a road or traffic video and process it through the live Edge AI pipeline.
+        </p>
+      </div>
+
+  <VideoUploadPanel />
+</div>
+
 
       {/* Demo input controls */}
       <details className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

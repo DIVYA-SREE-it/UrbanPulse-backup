@@ -4,10 +4,10 @@ from collections import defaultdict
 class RoadDetectionStabilizer:
     def __init__(
         self,
-        confirm_frames=3,
+        confirm_frames=2,
         max_history=5,
-        max_stale_frames=7,
-        iou_threshold=0.20,
+        max_stale_frames=8,
+        iou_threshold=0.10,
     ):
         self.confirm_frames = confirm_frames
         self.max_history = max_history
