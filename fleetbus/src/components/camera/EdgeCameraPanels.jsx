@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { EDGE_URL, readJson } from '../../services/edgeApi';
+import { VideoUploadPanel } from './VideoUploadPanel';
 
 
 const number = (value, digits = 1) =>
@@ -312,6 +313,16 @@ function CameraPanel({ kind, state, connected }) {
             Reconnect preview
           </button>
         )}
+
+        <VideoUploadPanel
+          camera={kind}
+          sourceFile={state?.source_file}
+          inputMode={state?.input_mode}
+          onSourceChanged={() => {
+            setStreamFailed(false);
+            setRetry(value => value + 1);
+          }}
+        />
 
         {/* Performance telemetry */}
         <div className="grid grid-cols-3 gap-2">

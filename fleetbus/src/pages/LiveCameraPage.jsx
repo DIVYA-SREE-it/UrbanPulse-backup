@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Camera,
-  ChevronDown,
   Cpu,
   Database,
   Radio,
@@ -9,8 +8,6 @@ import {
 } from 'lucide-react';
 
 import { EdgeCameraPanels } from '../components/camera/EdgeCameraPanels';
-import { VideoUploadPanel } from '../components/camera/VideoUploadPanel';
-
 
 export function LiveCameraPage() {
   return (
@@ -59,10 +56,10 @@ export function LiveCameraPage() {
         </div>
       </div>
 
-
-      {/* Simple pipeline explanation */}
+      {/* Pipeline explanation */}
       <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-600">
+
           <span className="rounded-lg bg-slate-100 px-3 py-1.5">
             Camera Feed
           </span>
@@ -90,49 +87,12 @@ export function LiveCameraPage() {
           <span className="rounded-lg bg-amber-50 px-3 py-1.5 text-amber-700">
             Central Platform
           </span>
+
         </div>
       </div>
 
-
-      {/* Main live intelligence */}
+      {/* Road + Traffic live AI panels */}
       <EdgeCameraPanels />
-
-      {/* Camera input controls */}
-      <div className="mt-6">
-        <div className="mb-3">
-        <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wide">
-            Demo Camera Inputs
-        </h2>
-        <p className="text-xs text-slate-500 mt-1">
-          Upload a road or traffic video and process it through the live Edge AI pipeline.
-        </p>
-      </div>
-
-  <VideoUploadPanel />
-</div>
-
-
-      {/* Demo input controls */}
-      <details className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
-          <div>
-            <p className="text-sm font-extrabold text-slate-900">
-              Demo Video Sources
-            </p>
-
-            <p className="mt-0.5 text-xs text-slate-500">
-              Replace prerecorded road or traffic camera input for prototype testing.
-            </p>
-          </div>
-
-          <ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" />
-        </summary>
-
-        <div className="border-t border-slate-200 p-4">
-          <VideoUploadPanel />
-        </div>
-      </details>
-
 
       {/* Prototype note */}
       <div className="rounded-xl border border-blue-100 bg-blue-50/50 px-4 py-3">

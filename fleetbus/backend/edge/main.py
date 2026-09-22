@@ -43,7 +43,29 @@ app.add_middleware(
 
 @app.get("/api/status")
 def status():
-    return runtime.status()
+    data = runtime.status()
+
+    for camera in ("road", "traffic"):
+        source_path = Path(runtime.config[f"{camera}_video"])
+        camera_state = data.get("cameras", {}).get(camera)
+
+        if camera_state is not None:
+            camera_state["source_file"] = source_path.name
+
+            try:
+                is_uploaded = (
+                    source_path.resolve().parent == UPLOAD_DIR.resolve()
+                )
+            except OSError:
+                is_uploaded = False
+
+            camera_state["input_mode"] = (
+                "UPLOADED_TEST_VIDEO"
+                if is_uploaded
+                else "DEFAULT_DEMO_VIDEO"
+            )
+
+    return data
 
 @app.post("/api/upload-video")
 async def upload_video(
